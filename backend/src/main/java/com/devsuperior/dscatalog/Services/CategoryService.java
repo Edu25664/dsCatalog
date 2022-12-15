@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+import javax.swing.text.html.parser.Entity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +33,7 @@ public class CategoryService {
   @Transactional(readOnly = true)
   public CategoryDto findById(Long id) {
     Optional<Category> obj = repository.findById(id);
-    Category entity = obj.get();
+    Category entity = obj.orElseThrow(() -> new EntityNotFoundException("Entity not Fund"));
     return new CategoryDto(entity);
   }
 }
