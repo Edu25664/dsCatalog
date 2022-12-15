@@ -2,6 +2,7 @@ package com.devsuperior.dscatalog.Services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -24,5 +25,12 @@ public class CategoryService {
     List<Category> list = repository.findAll();
     return list.stream().map(x -> new CategoryDto(x)).collect(Collectors.toList());
 
+  }
+ 
+  @Transactional(readOnly = true)
+  public CategoryDto findById(Long id) {
+    Optional<Category> obj = repository.findById(id);
+    Category entity = obj.get();
+    return new CategoryDto(entity);
   }
 }
