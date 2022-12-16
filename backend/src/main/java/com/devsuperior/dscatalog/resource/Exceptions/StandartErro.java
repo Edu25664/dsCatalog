@@ -1,8 +1,9 @@
 package com.devsuperior.dscatalog.resource.Exceptions;
 
+import java.io.Serializable;
 import java.time.Instant;
 
-public class StandartErro {
+public class StandartErro implements Serializable {
 
     private Instant timestamp;
     private Integer status;

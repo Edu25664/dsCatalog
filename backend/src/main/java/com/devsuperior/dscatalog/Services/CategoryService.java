@@ -1,13 +1,10 @@
 package com.devsuperior.dscatalog.Services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
-import javax.swing.text.html.parser.Entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +30,7 @@ public class CategoryService {
   @Transactional(readOnly = true)
   public CategoryDto findById(Long id) {
     Optional<Category> obj = repository.findById(id);
-    Category entity = obj.orElseThrow(() -> new EntityNotFoundException("Entity not Fund"));
+    Category entity = obj.orElseThrow(() -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException("Resourcer Not Found"));
     return new CategoryDto(entity);
   }
 }
