@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,4 +31,13 @@ public class CategoryService {
     Category entity = obj.orElseThrow(() -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException("Resourcer Not Found"));
     return new CategoryDto(entity);
   }
+
+  @Transactional
+  public CategoryDto insert(CategoryDto dto) {
+    Category entity = new Category();
+    entity.setNome(dto.getName());
+    entity = repository.save(entity);
+    return new CategoryDto(entity);
+  }
+
 }
