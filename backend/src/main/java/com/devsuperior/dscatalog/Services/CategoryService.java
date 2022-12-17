@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +26,12 @@ public class CategoryService {
     return list.stream().map(x -> new CategoryDto(x)).collect(Collectors.toList());
 
   }
- 
+
   @Transactional(readOnly = true)
   public CategoryDto findById(Long id) {
     Optional<Category> obj = repository.findById(id);
-    Category entity = obj.orElseThrow(() -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException("Resourcer Not Found"));
+    Category entity = obj.orElseThrow(
+        () -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException("Resourcer Not Found"));
     return new CategoryDto(entity);
   }
 
@@ -38,6 +41,22 @@ public class CategoryService {
     entity.setNome(dto.getName());
     entity = repository.save(entity);
     return new CategoryDto(entity);
+  }
+
+  @Transactional
+  public CategoryDto update(Long id, CategoryDto dto) {
+    try{
+    Category entity = repository.getReferenceById(id);
+    entity.setNome(dto.getName());
+    entity = repository.save(entity);
+    return new CategoryDto(entity);
+    }
+    catch (EntityNotFoundException e){
+
+      throw new EntityNotFoundException( id + " not found ");
+
+    }
+
   }
 
 }
