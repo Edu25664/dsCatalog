@@ -7,9 +7,12 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsuperior.dscatalog.Services.Exceptions.DataBaseExcpetion;
 import com.devsuperior.dscatalog.dto.CategoryDto;
 import com.devsuperior.dscatalog.entites.Category;
 import com.devsuperior.dscatalog.repositories.CategoryRepository;
@@ -17,6 +20,8 @@ import com.devsuperior.dscatalog.repositories.CategoryRepository;
 @Service
 public class CategoryService {
 
+  private String messageError = "Resourcer Not Found";
+  private String messageErrorViolation = "Resource violation";
   @Autowired
   private CategoryRepository repository;
 
@@ -31,7 +36,7 @@ public class CategoryService {
   public CategoryDto findById(Long id) {
     Optional<Category> obj = repository.findById(id);
     Category entity = obj.orElseThrow(
-        () -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException("Resourcer Not Found"));
+        () -> new com.devsuperior.dscatalog.Services.Exceptions.EntityNotFoundException(messageError));
     return new CategoryDto(entity);
   }
 
@@ -45,18 +50,31 @@ public class CategoryService {
 
   @Transactional
   public CategoryDto update(Long id, CategoryDto dto) {
+    try {
+      Category entity = repository.getReferenceById(id);
+      entity.setNome(dto.getName());
+      entity = repository.save(entity);
+      return new CategoryDto(entity);
+    } catch (EntityNotFoundException e) {
+
+      throw new EntityNotFoundException(id + messageError);
+
+    }
+
+  }
+
+  public void delete(Long id) {
     try{
-    Category entity = repository.getReferenceById(id);
-    entity.setNome(dto.getName());
-    entity = repository.save(entity);
-    return new CategoryDto(entity);
+      repository.deleteById(id);
     }
-    catch (EntityNotFoundException e){
-
-      throw new EntityNotFoundException( id + " not found ");
-
+    catch(EmptyResultDataAccessException e ){
+      throw new EntityNotFoundException(messageError);
     }
 
+    catch(DataIntegrityViolationException e){
+      throw new DataBaseExcpetion(messageErrorViolation);
+    }
+    
   }
 
 }
